@@ -101,6 +101,19 @@ jobs:
               env:
                 THEOS: ${{ github.workspace }}/theos
 
+            - name: Remove problematic extensions from IPA
+              run: |
+                cd main/packages
+                IPAFILE=$(ls -t *.ipa | head -n1)
+                mkdir -p tmp_ipa
+                cd tmp_ipa
+                unzip -q "../$IPAFILE"
+                rm -rf Payload/Instagram.app/PlugIns/InstagramLockScreenCamera.appex
+                zip -qr "../fixed_$IPAFILE" .
+                cd ..
+                mv "fixed_$IPAFILE" "$IPAFILE"
+                rm -rf tmp_ipa
+
             - name: Rename IPA to include version info
               run: |
                 cd main/packages
